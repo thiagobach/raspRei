@@ -2,14 +2,15 @@ import RPi.GPIO as GPIO # import GPIO librery
 from time import sleep
 
 class motor():
-    ”””
+   """
+    
     As now the motors are connected to the board in the following fashion:
         Port 23 - Input 2 pin
         Port 24 - Input 1 pin 
         Port 25 - Enable pin
         The driver is the L293D
         Supply voltage = 6V
-    ”””
+    """
     
     
     
@@ -49,4 +50,3 @@ class motor():
             self.pwm.stop() # stop PWM from GPIO output it is necessary
             GPIO.cleanup()
             return ("Motors are turned Off")
-
