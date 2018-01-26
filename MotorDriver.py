@@ -27,7 +27,7 @@ class motor():
         #Motor1A = 24 # set GPIO-02 as Input 1 of the controller IC
         #Motor1B = 23 # set GPIO-03 as Input 2 of the controller IC 
         #Motor1E = 25 # set GPIO-04 as Enable pin 1 of the controller IC
-        return ("This motor is ready to rock and roll")
+        print ("This motor is ready to rock and roll")
 
         def runMotor(Speed=50,forward=True):
             self.pwm.ChangeDutyCycle(Speed)
@@ -35,18 +35,18 @@ class motor():
             if forward:
                 GPIO.output(self.IBp,GPIO.LOW)
                 GPIO.output(self.IAp,GPIO.HIGH)
-                return ("Motor is running forward")
+                print ("Motor is running forward")
             else:
                 GPIO.output(self.IBp,GPIO.HIGH)
                 GPIO.output(self.IAp,GPIO.LOW)
-                return ("Motor is running backwards")
+                print ("Motor is running backwards")
     
     
         def stop():
             GPIO.output(self.ENp,GPIO.LOW)
-            return("Motor stopped")
+            print("Motor stopped")
 
         def close():
             self.pwm.stop() # stop PWM from GPIO output it is necessary
             GPIO.cleanup()
-            return ("Motors are turned Off")
+            print ("Motors are turned Off")
