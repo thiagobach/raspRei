@@ -1,23 +1,32 @@
 import RPi.GPIO as GPIO # import GPIO librery
+from time import sleep
 
 class servo():
-    def __init__(self,servoPort=11,initialPos = 0):
-        self.SP = servoPort
+    def __init__(self,servoPort=18):
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.SP,GPIO.OUT)
-        self.servoPos = GPIO.PWM(self.SP,initialPos)
-        self.servoPos.start(initialPos)
+        GPIO.setup(servoPort,GPIO.OUT)
+        self.servoPos = GPIO.PWM(servoPort,50)
+        #self.servoPos.start(initialPos)
         print ("Servo Initialized")
         
-    def switch(self,straight = True):
-        if straight:    
-            self.servoPos.start(0)
-            print("Train will follow forward")
-        else:
-            self.servoPos.start(7.5)
-            print("Train will be deviated")
-    
+    def switch(self,position):
+            
+            self.servoPos.start(position)
+            sleep(0.5)
+            self.servoPos.stop()
+            
+            
     def close(self):
-        self.servoPos.stop() # stop PWM from GPIO output it is necessary
+        self.servoPos.stop()
         GPIO.cleanup()
         print("This servo was disconected")
+
+
+if __name__ == "__main__":
+    #deviate 1.0
+    #straight 4.0
+    S1 = servo(18)
+    S1.switch(4.0)
+    sleep(5)
+    S1.switch(1.0)
+    S1.close
