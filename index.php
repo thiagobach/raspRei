@@ -18,7 +18,4 @@ $fp = fopen($filename, "r");
 $content = fread($fp, filesize($filename));
 fclose($fp);
 
-if($content == "full"){
-//do stuff
-}
 ?>
