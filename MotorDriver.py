@@ -10,7 +10,8 @@
 
 import RPi.GPIO as GPIO # import GPIO librery
 from time import sleep
-import hall
+import hallADC as hall
+
 
 class motor():
    def __init__(self,Input1Pin,Input2Pin,EnablePin):
@@ -29,40 +30,43 @@ class motor():
         #Motor1E = 25 # set GPIO-04 as Enable pin 1 of the controller IC
         print ("This motor is ready to rock and roll")
 
-   def runMotor(self,Speed=50,forward=True):
-      self.pwm.ChangeDutyCycle(Speed)
-      GPIO.output(self.ENp,GPIO.HIGH)
-      if forward:
-         GPIO.output(self.IBp,GPIO.LOW)
-         GPIO.output(self.IAp,GPIO.HIGH)
-         hall.forward =True
-         print ("Motor is running forward")
-      else:
-         GPIO.output(self.IBp,GPIO.HIGH)
-         GPIO.output(self.IAp,GPIO.LOW)
-         print ("Motor is running backwards")
-         
-       
-   def stop(self):
-        GPIO.output(self.ENp,GPIO.LOW)
-       111111111111111 GPIO.output(self.IBp,GPIO.LOW)
-        GPIO.output(self.IAp,GPIO.LOW)
-        print("Motor stopped")
+   def runMotor(self,Speed=50,forward=True, moving = True):
+      #print("Forward is set as: "+str(forward))
+      #print("Moving is set as: " +str(moving))
 
+      self.pwm.ChangeDutyCycle(Speed)
+      if moving==True:
+         GPIO.output(self.ENp,GPIO.HIGH)
+         if forward:
+            GPIO.output(self.IBp,GPIO.LOW)
+            GPIO.output(self.IAp,GPIO.HIGH)
+            hall.forward = "forward"
+            #print ("Motor is running forward")
+         else:
+            GPIO.output(self.IBp,GPIO.HIGH)
+            GPIO.output(self.IAp,GPIO.LOW)
+            hall.forward = "backward"
+           # print ("Motor is running backwards")
+            
+      if moving == False:
+         GPIO.output(self.ENp,GPIO.LOW)
+         GPIO.output(self.IBp,GPIO.LOW)
+         GPIO.output(self.IAp,GPIO.LOW)
+         #print("Motor stopped")
+        
    def close(self):
         self.pwm.stop()# stop PWM from GPIO output it is necessary
         #GPIO.cleanup()
         print ("Motors are turned Off")
-        
-   
 
 if __name__ == "__main__":
-   hs1 = hall.hallSensor(15)
+   hs1 = hall.adc_hall()
+   hs1.monitor()
    locomotive = motor(23,24,25)
-   locomotive.runMotor(50,True)
-   sleep(10)
-   
-   locomotive.runMotor(50,False)
-   sleep(10)
+
+   locomotive.runMotor(100,True,True)
+   sleep(1)
+   locomotive.runMotor(100,False,True)
+   sleep(1)
    
    locomotive.close()
