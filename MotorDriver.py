@@ -23,18 +23,22 @@ class motor():
         GPIO.setup(self.IAp,GPIO.OUT)
         GPIO.setup(self.IBp,GPIO.OUT)
         GPIO.setup(self.ENp,GPIO.OUT)
-        self.pwm=GPIO.PWM(self.ENp,50)
-        self.pwm.start(0) # starting it with 50% dutycycle
+        self.pwm=GPIO.PWM(self.ENp,30)
+        self.pwm.start(0)
+        self.prevSpeed = 0
+        # starting it with 50% dutycycle
         #Motor1A = 24 # set GPIO-02 as Input 1 of the controller IC
         #Motor1B = 23 # set GPIO-03 as Input 2 of the controller IC 
         #Motor1E = 25 # set GPIO-04 as Enable pin 1 of the controller IC
         print ("This motor is ready to rock and roll")
 
-   def runMotor(self,Speed=50,forward=True, moving = True):
-      #print("Forward is set as: "+str(forward))
-      #print("Moving is set as: " +str(moving))
-
-      self.pwm.ChangeDutyCycle(Speed)
+   def runMotor(self,Speed,forward=True, moving = True):
+    
+      if (self.prevSpeed != Speed):
+         self.pwm.ChangeDutyCycle(Speed)
+         self.prevSpeed = Speed
+         print("The speed changed to: " + str(Speed))
+         
       if moving==True:
          GPIO.output(self.ENp,GPIO.HIGH)
          if forward:
@@ -64,9 +68,9 @@ if __name__ == "__main__":
    hs1.monitor()
    locomotive = motor(23,24,25)
 
-   locomotive.runMotor(100,True,True)
-   sleep(1)
-   locomotive.runMotor(100,False,True)
-   sleep(1)
+   locomotive.runMotor(50,False,True)
+   sleep(3)
+   locomotive.runMotor(50,True,True)
+   sleep(3)
    
    locomotive.close()
