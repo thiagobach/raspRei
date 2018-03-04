@@ -1,3 +1,19 @@
+"""
+This is the module that controls the hall sensor on the train.
+The ahll sensor is influenced by the noise created by the motor, therefore
+we are using a Analog to Digital Converter (ADC) to mitigate this effect.
+
+The sensor used is a Adafruit ADS1115.
+
+Due to the necessity of using interrupts, this module controls the state of the
+train. Other modules will look for the orders in this module.
+(self.orderMoving and self. orderForward).
+
+
+"""
+
+
+
 import time
 import Adafruit_ADS1x15
 import RPi.GPIO as GPIO
@@ -8,23 +24,18 @@ import logging
 class adc_hall():
 
     def my_callbackA(self,channel):
-        print("I found a magnet!")
-        self.pass_paras_to_station(self.forward)
+        self.logger.info("I found a magnet!")
+        self.pass_paras_to_station("h")
         
 
         
 
-    def pass_paras_to_station(self,forward):
+    def pass_paras_to_station(self,message):
 
-
-       
         ws = create_connection("ws://192.168.3.12:13254")
         self.logger.info("Open")
-        self.logger.info("Sending forward={}".format(forward))
-        ws.send(forward)
-        
-        #logger.info("Sent")
-        #logger.info("Receiving...")
+        self.logger.info("Sending staus={}".format(message))
+        ws.send(message)
         result = ws.recv()
         self.logger.info("Received '{}'".format(result))
 
@@ -66,8 +77,7 @@ class adc_hall():
         self.GAIN = 1
         self.value = 0
         self.position = 0
-        print(str(time.ctime() )+" - Hall Sensor Reading using ADS1115 Initialized")
-        print(str(time.ctime() )+ " - Sensor Gain: " + str(self.GAIN))
+        self.logger.info("Hall Sensor Initialized")
         self.forward = "forward"
         #Creates event Detector for the Pin that will interface with ADS1115 (ADS1115 Alert Pin)
         GPIO.setmode(GPIO.BCM)
@@ -76,13 +86,13 @@ class adc_hall():
 
     def monitor(self, activate = True):
         if activate:
-            print(str(time.ctime() )+" - You enabled the position Monitoring.")
+            self.logger.info("You enabled the position Monitoring.")
             self.adc.start_adc_comparator(0,  # Channel number
                          20000, 100000,  # High threshold value, low threshold value
                          active_low=False, traditional=False, latching=False,
                          num_readings=1, gain=self.GAIN)
         else:
-            print(str(time.ctime() )+" - You disabled the position Monitoring.")
+            self.logger.info("You disabled the position Monitoring.")
             self.adc.stop_adc()
         
 if __name__ == "__main__":
